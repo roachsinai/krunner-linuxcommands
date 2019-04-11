@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name=Linux Commands
+Comment=Search through the Linux command.
+X-KDE-ServiceTypes=Plasma/Runner
+Type=Service
+Icon=konversation
+X-KDE-Library=krunner_linuxcommands
+X-KDE-PluginInfo-Author=Roach Sinai
+X-KDE-PluginInfo-Email=roachsinai@qq.com
+X-KDE-PluginInfo-Name=linuxcommands
+X-KDE-PluginInfo-Version= 1.0
+X-KDE-PluginInfo-License=GPL
+X-KDE-PluginInfo-EnabledByDefault=true
+X-Plasma-AdvertiseSingleRunnerQueryMode=true
