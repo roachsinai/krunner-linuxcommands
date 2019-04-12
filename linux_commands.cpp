@@ -5,6 +5,8 @@
 #include <QClipboard>
 #include <QFileInfo>
 #include <QJsonDocument>
+#include <QDir>
+#include <QDesktopServices>
 
 LinuxCommandsRunner::LinuxCommandsRunner(QObject *parent, const QVariantList &args)
     : Plasma::AbstractRunner(parent, args)
@@ -20,7 +22,8 @@ LinuxCommandsRunner::LinuxCommandsRunner(QObject *parent, const QVariantList &ar
     setSpeed(AbstractRunner::SlowSpeed);
     setPriority(HighestPriority);
     setDefaultSyntax(Plasma::RunnerSyntax(QString("lc :q:"), i18n("List linux commands :q:.")));
-    linux_command_index_path = "/home/roach/data.json";
+    linux_command_index_path = "~/.data.json";
+    url_prefix = "https://wangchujiang.com/linux-command/c";
 }
 
 LinuxCommandsRunner::~LinuxCommandsRunner()
@@ -31,29 +34,36 @@ void LinuxCommandsRunner::match(Plasma::RunnerContext &context)
 {
     QString text = context.query();
 
-    if (!context.isValid() || !fileExists(linux_command_index_path)) return;
+    if (!context.isValid() || !fileExists(morphFile(linux_command_index_path))) return;
 
     if (text.contains(" ")) {
-        QJsonObject json = readJson(linux_command_index_path);
-        QEventLoop loop;
+        QJsonObject json = readJson(morphFile(linux_command_index_path));
         QList<Plasma::QueryMatch> matches;
         float relevance = 1;
-        QString kw = text.replace("lc", "", Qt::CaseInsensitive);
+        QString kw = text.replace("lc ", "", Qt::CaseInsensitive);
         if (kw.size() > 0) {
             foreach(const QString& key, json.keys()) {
                 if (key.contains(kw, Qt::CaseInsensitive)) {
+                    QJsonObject inner_json = json.value(key).toObject();
+                    QString desc = inner_json.value("d").toString();
+                    QUrl url(url_prefix + inner_json.value("p").toString() + ".html");
+                    QList<QUrl> urls;
+                    urls.append(url);
                     relevance -= 0.01;
                     Plasma::QueryMatch match(this);
-                    match.setType(Plasma::QueryMatch::InformationalMatch);
+                    match.setType(Plasma::QueryMatch::HelperMatch);
                     match.setIcon(QIcon::fromTheme("konversation"));
                     match.setText(key);
+                    match.setSubtext(desc);
+                    match.setUrls(urls);
+                    match.setEnabled(true);
                     match.setRelevance(relevance);
                     matches.append(match);
                 }
             }
         }
-        context.addMatches(matches);
-        loop.exec();
+        if (!matches.isEmpty())
+            context.addMatches(matches);
     }
 }
 
@@ -61,6 +71,9 @@ void LinuxCommandsRunner::run(const Plasma::RunnerContext &context, const Plasma
 {
     Q_UNUSED(context);
     QApplication::clipboard()->setText(match.text());
+    foreach(const QUrl& url, match.urls()) {
+        QDesktopServices::openUrl(url);
+    }
 }
 
 void LinuxCommandsRunner::reloadConfiguration()
@@ -77,6 +90,7 @@ bool LinuxCommandsRunner::fileExists(QString& path) {
         return false;
     }
 }
+
 QJsonObject LinuxCommandsRunner::readJson(QString& path)
 {
     QFile file(path);
@@ -85,4 +99,12 @@ QJsonObject LinuxCommandsRunner::readJson(QString& path)
     file.close();
     return QJsonDocument::fromJson(rawData).object();
 }
+
+QString& LinuxCommandsRunner::morphFile(QString& s)
+{
+    if (s.startsWith ("~/"))
+        s.replace (0, 1, QDir::homePath());
+    return s;
+}
+
 #include "moc_linux_commands.cpp"

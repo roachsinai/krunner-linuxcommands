@@ -11,15 +11,16 @@ public:
     LinuxCommandsRunner(QObject *parent, const QVariantList &args);
     ~LinuxCommandsRunner();
 
-    void match(Plasma::RunnerContext &context) override;
-    void run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match) override;
-    void createRunOptions(QWidget *widget) override;
+    void match(Plasma::RunnerContext &) override;
+    void run(const Plasma::RunnerContext &, const Plasma::QueryMatch &) override;
     void reloadConfiguration() override;
 
 private:
     QString linux_command_index_path;
-    bool fileExists(QString& path);
-    QJsonObject readJson(QString& path);
+    QString url_prefix;
+    bool fileExists(QString&);
+    QJsonObject readJson(QString&);
+    QString& morphFile (QString&);
 };
 
 K_EXPORT_PLASMA_RUNNER(linuxcommands, LinuxCommandsRunner)
