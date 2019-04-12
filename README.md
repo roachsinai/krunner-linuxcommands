@@ -26,9 +26,9 @@ krunner
 
 #### 脚本
 
-也可以直接运行下面的脚本进行安装与卸载。
+也可以运行下面的脚本进行安装与卸载。
 
-+ [安装](./install.sh)
++ [安装](./install.sh)（前提条件：1. 下载好配置文件；2. repo clone finished.）
 + [卸载](./uninstall.sh)
 
 ## ToDo
