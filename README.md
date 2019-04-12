@@ -2,7 +2,11 @@
 
 `Ctrl+j/k` 在匹配候选列表中进行选择。按下`Enter`之后在浏览器中打开对应命令的链接，并复制命令名字到剪切板。
 
-![Imgur](https://i.imgur.com/SWBUmkt.png)
+![screenshot](https://i.imgur.com/SWBUmkt.png)
+
+#### 配置
+
+![config](https://i.imgur.com/tMkhTA4.png)
 
 ## 准备
 
@@ -20,7 +24,7 @@ mkdir build && cd build
 cmake .. -DCMAKE_INSTALL_PREFIX=`kf5-config --prefix` -DQT_PLUGIN_INSTALL_DIR=`kf5-config --qt-plugins`
 make 
 sudo make install
-kquitapp krunner
+kquitapp5 krunner
 krunner
 ```
 
@@ -33,4 +37,4 @@ krunner
 
 ## ToDo
 
-+ 添加配置制定`linux-command`的配置文件存放位置
++ [x] 添加配置制定`linux-command`的配置文件存放位置

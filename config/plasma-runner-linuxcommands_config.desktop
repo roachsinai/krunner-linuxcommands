@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Linux Commands
+Type=Service
+X-KDE-ServiceTypes=KCModule
+X-KDE-Library=kcm_krunner_linuxcommands
+X-KDE-ParentComponents=Linux Commands
+X-KDE-PluginKeyword=kcm_krunner_linuxcommands

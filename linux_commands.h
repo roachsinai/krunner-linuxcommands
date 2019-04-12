@@ -16,8 +16,8 @@ public:
     void reloadConfiguration() override;
 
 private:
-    QString linux_command_index_path;
     QString url_prefix;
+    QString m_jsonLocation;
     bool fileExists(QString&);
     QJsonObject readJson(QString&);
     QString& morphFile (QString&);

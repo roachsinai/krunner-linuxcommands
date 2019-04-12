@@ -1,4 +1,5 @@
 #include "linux_commands.h"
+#include "config/linux_commands_config.h"
 
 #include <KLocalizedString>
 #include <QApplication>
@@ -14,7 +15,6 @@ LinuxCommandsRunner::LinuxCommandsRunner(QObject *parent, const QVariantList &ar
     Q_UNUSED(args);
 
     setObjectName(QLatin1String("LinuxCommandsRunner"));
-    reloadConfiguration();
     setHasRunOptions(true);
     setIgnoredTypes(Plasma::RunnerContext::Directory |
                     Plasma::RunnerContext::File |
@@ -22,8 +22,8 @@ LinuxCommandsRunner::LinuxCommandsRunner(QObject *parent, const QVariantList &ar
     setSpeed(AbstractRunner::SlowSpeed);
     setPriority(HighestPriority);
     setDefaultSyntax(Plasma::RunnerSyntax(QString("lc :q:"), i18n("List linux commands :q:.")));
-    linux_command_index_path = "~/.data.json";
     url_prefix = "https://wangchujiang.com/linux-command/c";
+    reloadConfiguration();
 }
 
 LinuxCommandsRunner::~LinuxCommandsRunner()
@@ -34,10 +34,10 @@ void LinuxCommandsRunner::match(Plasma::RunnerContext &context)
 {
     QString text = context.query();
 
-    if (!context.isValid() || !fileExists(morphFile(linux_command_index_path))) return;
+    if (!context.isValid() || !fileExists(morphFile(m_jsonLocation))) return;
 
     if (text.contains(" ")) {
-        QJsonObject json = readJson(morphFile(linux_command_index_path));
+        QJsonObject json = readJson(morphFile(m_jsonLocation));
         QList<Plasma::QueryMatch> matches;
         float relevance = 1;
         QString kw = text.replace("lc ", "", Qt::CaseInsensitive);
@@ -52,7 +52,7 @@ void LinuxCommandsRunner::match(Plasma::RunnerContext &context)
                     relevance -= 0.01;
                     Plasma::QueryMatch match(this);
                     match.setType(Plasma::QueryMatch::HelperMatch);
-                    match.setIcon(QIcon::fromTheme("konversation"));
+                    match.setIcon(QIcon::fromTheme("internet-web-browser"));
                     match.setText(key);
                     match.setSubtext(desc);
                     match.setUrls(urls);
@@ -78,7 +78,8 @@ void LinuxCommandsRunner::run(const Plasma::RunnerContext &context, const Plasma
 
 void LinuxCommandsRunner::reloadConfiguration()
 {
-    //nothing
+    KConfigGroup grp = config();
+    m_jsonLocation= grp.readEntry(CONFIG_JSON_LOCATION);
 }
 
 bool LinuxCommandsRunner::fileExists(QString& path) {
